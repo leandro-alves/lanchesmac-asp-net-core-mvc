@@ -37,9 +37,29 @@ namespace LanchesMac.Models
             };
         }
 
-        public void AdicionarAoCarrinho(CarrinhoCompraItem carrinhoCompraItem)
+        public void AdicionarAoCarrinho(Lanche lanche)
         {
+            var carrinhoCompraItem =
+                _context.CarrinhoCompraItens.SingleOrDefault(
+                    s => s.Lanche.LancheId == lanche.LancheId &&
+                         s.CarrinhoCompraId == CarrinhoCompraId);
 
+            if (carrinhoCompraItem == null)
+            {
+                carrinhoCompraItem = new CarrinhoCompraItem
+                {
+                    CarrinhoCompraId = CarrinhoCompraId,
+                    Lanche = lanche,
+                    Quantidade = 1
+                };
+                _context.CarrinhoCompraItens.Add(carrinhoCompraItem);
+            }
+            else
+            {
+                carrinhoCompraItem.Quantidade++;
+            }
+
+            _context.SaveChanges();
         }
 
         public void RemoverDoCarrinho(int carrinhoCompraItemId)
