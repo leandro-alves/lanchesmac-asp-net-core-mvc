@@ -1,4 +1,5 @@
 ﻿using LanchesMac.Context;
+using Microsoft.EntityFrameworkCore;
 
 namespace LanchesMac.Models
 {
@@ -18,7 +19,7 @@ namespace LanchesMac.Models
         public static CarrinhoCompra GetCarrinho(IServiceProvider services)
         {
             //Define uma sessão
-            ISession session = 
+            ISession session =
                 services.GetRequiredService<IHttpContextAccessor>()?.HttpContext.Session;
 
             //Obtém um serviço do tipo do nosso contexto
@@ -88,19 +89,33 @@ namespace LanchesMac.Models
             return quantidadeLocal;
         }
 
-        public void GetCarrinhoCompraItens()
+        public List<CarrinhoCompraItem> GetCarrinhoCompraItens()
         {
-
+            return CarrinhoCompraItens ??
+                    (CarrinhoCompraItens =
+                        _context.CarrinhoCompraItens
+                        .Where(c => c.CarrinhoCompraId == CarrinhoCompraId)
+                        .Include(s => s.Lanche)
+                        .ToList());
         }
 
         public void LimparCarrinho()
         {
+            var carrinhoItens = _context.CarrinhoCompraItens
+                                .Where(carrinho =>
+                                carrinho.CarrinhoCompraId == CarrinhoCompraId);
 
+            _context.CarrinhoCompraItens.RemoveRange(carrinhoItens);
+            _context.SaveChanges();
         }
 
-        public void GetCarrinhoCompraTotal()
+        public decimal GetCarrinhoCompraTotal()
         {
+            var total = _context.CarrinhoCompraItens
+                        .Where(c => c.CarrinhoCompraId == CarrinhoCompraId)
+                        .Select(c => c.Lanche.Preco * c.Quantidade).Sum();
 
+            return total;
         }
     }
 }
