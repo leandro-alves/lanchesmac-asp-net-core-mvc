@@ -55,7 +55,7 @@ namespace LanchesMac.Controllers
 
                 //Define mensagens ao cliente
                 ViewBag.CheckoutCompletoMensagem = "Obrigado pelo seu pedido :)";
-                ViewBag.TotalPeido = _carrinhoCompra.GetCarrinhoCompraTotal();
+                ViewBag.TotalPedido = _carrinhoCompra.GetCarrinhoCompraTotal();
 
                 //Limpa o carrinho do cliente
                 _carrinhoCompra.LimparCarrinho();
